@@ -912,18 +912,38 @@ def _maybe_streamlit_cache(*, ttl: int):
     return decorator
 
 
+def _sharepoint_download_url(share_url: str) -> str:
+    """Append download=1 to the query string so SharePoint streams the raw file
+    instead of the in-browser viewer."""
+    parsed = urllib.parse.urlparse(share_url)
+    query = parsed.query
+    if "download=" not in query:
+        query = (query + "&" if query else "") + "download=1"
+    return urllib.parse.urlunparse(parsed._replace(query=query))
+
+
 @_maybe_streamlit_cache(ttl=300)
 def _fetch_onedrive_bytes(share_url: str) -> bytes:
-    """Download a OneDrive shared file via the public shares API.
+    """Download a OneDrive/SharePoint shared file (anonymous "anyone with link").
 
-    Works for any share URL configured for "anyone with the link can view".
-    Encodes the share URL as base64 and asks api.onedrive.com to resolve it,
-    which handles both personal OneDrive and SharePoint-backed business
-    OneDrive shares without requiring sign-in.
+    Two paths because the OneDrive product family has split backends:
+      - SharePoint Business (any *.sharepoint.com URL): the share URL itself,
+        with ?download=1 appended, returns the raw bytes. No API hop.
+      - Personal OneDrive (1drv.ms, onedrive.live.com): use the legacy public
+        shares API, which knows how to resolve those redirector URLs.
     """
+    netloc = urllib.parse.urlparse(share_url).netloc.lower()
+    headers = {"User-Agent": "Mozilla/5.0 (water-dashboard)"}
+
+    if netloc.endswith(".sharepoint.com"):
+        download_url = _sharepoint_download_url(share_url)
+        req = urllib.request.Request(download_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.read()
+
     encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("ascii").rstrip("=")
     api_url = f"https://api.onedrive.com/v1.0/shares/u!{encoded}/root/content"
-    req = urllib.request.Request(api_url, headers={"User-Agent": "water-dashboard"})
+    req = urllib.request.Request(api_url, headers=headers)
     with urllib.request.urlopen(req, timeout=30) as resp:
         return resp.read()
 
