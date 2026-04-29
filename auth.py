@@ -142,9 +142,15 @@ def require_login() -> dict:
 
 
 def _resolve_data_path(raw: Optional[str]) -> Optional[str]:
-    """Turn a relative path in credentials.yaml into an absolute path."""
+    """Normalize a credentials data_path.
+
+    Pass through http(s) URLs unchanged (e.g. OneDrive share links).
+    For local paths, turn relative paths into absolute paths anchored at the app root.
+    """
     if not raw:
         return None
+    if isinstance(raw, str) and raw.startswith(("http://", "https://")):
+        return raw
     p = Path(raw)
     if not p.is_absolute():
         p = APP_ROOT / p
