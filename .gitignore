@@ -1,0 +1,23 @@
+# ── Real credentials and secrets (never commit) ─────────────────────────────
+credentials.yaml
+.streamlit/secrets.toml
+
+# ── Student response data (FERPA-sensitive) ─────────────────────────────────
+data/*.xlsx
+data/*.xls
+data/*.csv
+Formatted_IF_Data_for_App.xlsx
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# ── Editor / OS ─────────────────────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
