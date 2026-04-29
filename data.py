@@ -922,30 +922,69 @@ def _sharepoint_download_url(share_url: str) -> str:
     return urllib.parse.urlunparse(parsed._replace(query=query))
 
 
+def _looks_like_html(data: bytes) -> bool:
+    head = data[:512].lstrip().lower()
+    return head.startswith(b"<!doctype html") or head.startswith(b"<html") or b"<body" in head[:512]
+
+
+def _fetch_url_bytes(url: str) -> bytes:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (water-dashboard)",
+        "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream",
+    }
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.read()
+
+
 @_maybe_streamlit_cache(ttl=300)
 def _fetch_onedrive_bytes(share_url: str) -> bytes:
     """Download a OneDrive/SharePoint shared file (anonymous "anyone with link").
 
-    Two paths because the OneDrive product family has split backends:
-      - SharePoint Business (any *.sharepoint.com URL): the share URL itself,
-        with ?download=1 appended, returns the raw bytes. No API hop.
-      - Personal OneDrive (1drv.ms, onedrive.live.com): use the legacy public
-        shares API, which knows how to resolve those redirector URLs.
+    Tries up to two paths because OneDrive backends differ:
+      1. For SharePoint Business URLs (*.sharepoint.com): the share URL itself
+         with ?download=1 appended usually streams the raw bytes.
+      2. The legacy public shares API at api.onedrive.com works for personal
+         OneDrive shortcuts (1drv.ms, onedrive.live.com) and sometimes for
+         business shares.
+
+    If both attempts return HTML, the institution likely forces sign-in
+    regardless of share settings. We surface a specific error in that case
+    so the instructor knows what to fix.
     """
     netloc = urllib.parse.urlparse(share_url).netloc.lower()
-    headers = {"User-Agent": "Mozilla/5.0 (water-dashboard)"}
-
-    if netloc.endswith(".sharepoint.com"):
-        download_url = _sharepoint_download_url(share_url)
-        req = urllib.request.Request(download_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return resp.read()
-
     encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("ascii").rstrip("=")
     api_url = f"https://api.onedrive.com/v1.0/shares/u!{encoded}/root/content"
-    req = urllib.request.Request(api_url, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return resp.read()
+
+    attempts = []
+    if netloc.endswith(".sharepoint.com"):
+        attempts.append(_sharepoint_download_url(share_url))
+    attempts.append(api_url)
+
+    last_error: Exception | None = None
+    for url in attempts:
+        try:
+            data = _fetch_url_bytes(url)
+            if _looks_like_html(data):
+                last_error = RuntimeError(
+                    "OneDrive returned a sign-in or viewer page instead of the file."
+                )
+                continue
+            return data
+        except Exception as exc:
+            last_error = exc
+            continue
+
+    raise RuntimeError(
+        "OneDrive refused anonymous access. Most often this means the share "
+        "is restricted to people in your organization (despite the dialog "
+        "saying 'Anyone with the link'), or your tenant blocks anonymous "
+        "downloads. Open the file in OneDrive, click Share, and verify that "
+        "'Anyone with the link' is selected and that 'Block download' is OFF. "
+        "If the issue persists, your IT may have a tenant-wide policy "
+        "blocking anonymous access. "
+        f"Underlying error: {last_error}"
+    )
 
 
 def _open_excel_source(source):
