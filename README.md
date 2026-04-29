@@ -7,6 +7,19 @@ pedagogical resources.
 
 Built by the Balabanoff Research Group at the University of Louisville.
 
+## Documentation
+
+- [docs/COLLABORATORS.md](docs/COLLABORATORS.md) — start here if you are a new
+  instructor being onboarded onto the dashboard. Covers what the tool does,
+  how to log in, a tour of each page, and how to read the charts.
+- [docs/MAINTENANCE.md](docs/MAINTENANCE.md) — start here if you are
+  maintaining the dashboard. SOPs for editing items, adding tailored
+  resources, adding or removing instructors, testing locally, and pushing
+  changes to the deployed app.
+
+The rest of this README covers initial setup, local development, and
+deployment. Most day-to-day work belongs in one of the two docs above.
+
 ## Project layout
 
 ```
