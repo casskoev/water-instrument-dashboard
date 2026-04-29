@@ -11,8 +11,10 @@ with http(s); the file is downloaded via OneDrive's public shares API.
 """
 
 import base64
+import http.cookiejar
 import io
 import os
+import re
 import urllib.parse
 import urllib.request
 
@@ -913,13 +915,45 @@ def _maybe_streamlit_cache(*, ttl: int):
 
 
 def _sharepoint_download_url(share_url: str) -> str:
-    """Append download=1 to the query string so SharePoint streams the raw file
-    instead of the in-browser viewer."""
+    """Convert a SharePoint share URL into a direct-download URL.
+
+    Two transformations:
+      1. Replace the document-viewer prefix (:x: for Excel, :w: for Word, etc.)
+         with :b:, which routes through SharePoint's binary download handler
+         instead of the JS-driven web viewer.
+      2. Append ?download=1 so any remaining viewer logic streams bytes rather
+         than rendering an HTML preview.
+    """
     parsed = urllib.parse.urlparse(share_url)
+    path = re.sub(r"^/:[a-z]:/", "/:b:/", parsed.path)
     query = parsed.query
     if "download=" not in query:
         query = (query + "&" if query else "") + "download=1"
-    return urllib.parse.urlunparse(parsed._replace(query=query))
+    return urllib.parse.urlunparse(parsed._replace(path=path, query=query))
+
+
+# Real-browser headers. SharePoint and OneDrive will serve a different
+# (HTML viewer / bot wall) response to "scripty" user agents.
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;q=0.9,"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
+        "application/octet-stream;q=0.8,*/*;q=0.5"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "identity",  # no gzip; pandas reads bytes directly
+}
+
+
+def _build_browser_opener() -> urllib.request.OpenerDirector:
+    """Opener with a cookie jar so SharePoint redirect chains that require a
+    session cookie don't break us mid-redirect."""
+    jar = http.cookiejar.CookieJar()
+    return urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
 
 
 def _looks_like_html(data: bytes) -> bool:
@@ -928,12 +962,10 @@ def _looks_like_html(data: bytes) -> bool:
 
 
 def _fetch_url_bytes(url: str) -> bytes:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (water-dashboard)",
-        "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream",
-    }
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    """Fetch raw bytes with browser-y headers and cookie support."""
+    opener = _build_browser_opener()
+    req = urllib.request.Request(url, headers=_BROWSER_HEADERS)
+    with opener.open(req, timeout=30) as resp:
         return resp.read()
 
 
