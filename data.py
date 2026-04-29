@@ -4,9 +4,18 @@ All item content is drawn from water_instrument_v11_alternate_conceptions_bank.d
 
 Color tokens live in theme.py. Import them from there in any new code:
     from theme import CC_COLOR, AC_COLOR, AC_FADED_COLOR, FLAG_COLOR
+
+Each user's data file can live as either a local path (for dev) or a OneDrive
+share URL (for deployed apps). data_path is detected as a URL when it starts
+with http(s); the file is downloaded via OneDrive's public shares API.
 """
 
+import base64
+import io
 import os
+import urllib.parse
+import urllib.request
+
 import pandas as pd
 import numpy as np
 
@@ -878,17 +887,71 @@ CORRECT_ANSWERS = {
 }
 
 
+# ── URL helpers (OneDrive share links etc.) ──────────────────────────────────
+def _is_url(s) -> bool:
+    return isinstance(s, str) and s.startswith(("http://", "https://"))
+
+
+def _is_onedrive_url(url: str) -> bool:
+    """True for any OneDrive or SharePoint URL (personal or business)."""
+    netloc = urllib.parse.urlparse(url).netloc.lower()
+    return (
+        netloc.endswith(".sharepoint.com")
+        or netloc in ("1drv.ms", "onedrive.live.com")
+    )
+
+
+def _maybe_streamlit_cache(*, ttl: int):
+    """Apply st.cache_data when running under Streamlit, no-op otherwise."""
+    def decorator(func):
+        try:
+            import streamlit as st  # local import; data.py must be importable without Streamlit
+            return st.cache_data(ttl=ttl, show_spinner=False)(func)
+        except Exception:
+            return func
+    return decorator
+
+
+@_maybe_streamlit_cache(ttl=300)
+def _fetch_onedrive_bytes(share_url: str) -> bytes:
+    """Download a OneDrive shared file via the public shares API.
+
+    Works for any share URL configured for "anyone with the link can view".
+    Encodes the share URL as base64 and asks api.onedrive.com to resolve it,
+    which handles both personal OneDrive and SharePoint-backed business
+    OneDrive shares without requiring sign-in.
+    """
+    encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("ascii").rstrip("=")
+    api_url = f"https://api.onedrive.com/v1.0/shares/u!{encoded}/root/content"
+    req = urllib.request.Request(api_url, headers={"User-Agent": "water-dashboard"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.read()
+
+
+def _open_excel_source(source):
+    """Return either a local path or an in-memory file-like object that
+    pd.read_excel can consume."""
+    if _is_url(source):
+        if _is_onedrive_url(source):
+            return io.BytesIO(_fetch_onedrive_bytes(source))
+        # Generic public URL.
+        with urllib.request.urlopen(source, timeout=30) as resp:
+            return io.BytesIO(resp.read())
+    return source
+
+
 # ── Real data loader ──────────────────────────────────────────────────────────
-def load_real_data(filepath):
+def load_real_data(filepath_or_url):
     """
     Load student response data from the Water Instrument Excel file.
+    Accepts either a local file path or an http(s) URL (e.g. a OneDrive share).
     Columns: Q1-Q38 (answer choice, 1-indexed), QA1-QA38 (confidence, 1-5).
 
     Each row in the returned DataFrame has, in addition to the legacy fields:
         choice_counts: dict like {1: 11, 2: 7, 3: 28, 4: 0}  raw count per choice A..D
         prominent_choice: int (1..4) or None  the choice number of the prominent AC
     """
-    raw = pd.read_excel(filepath)
+    raw = pd.read_excel(_open_excel_source(filepath_or_url))
     rows = []
     for item_id, item in ITEMS.items():
         col = f"Q{item_id}"
@@ -1038,12 +1101,24 @@ LEGACY_DATA_FILE = os.path.join(APP_ROOT, "Formatted_IF_Data_for_App.xlsx")
 
 
 def _resolve_data_path():
-    """Return the path the current session should load, or None for demo."""
+    """Return what the current session should load, or None for demo.
+
+    Resolution order:
+      1. st.session_state['data_path'] (set by auth.require_login per user).
+         May be either a local file path or an http(s) URL such as a OneDrive
+         share. URLs are returned as-is; paths are returned only if the file
+         exists on disk.
+      2. legacy single-file install at the repo root.
+      3. None, which triggers the demo dataset.
+    """
     try:
         import streamlit as st  # local import keeps data.py importable outside Streamlit
-        path = st.session_state.get("data_path")
-        if path and os.path.exists(path):
-            return path
+        target = st.session_state.get("data_path")
+        if target:
+            if _is_url(target):
+                return target
+            if os.path.exists(target):
+                return target
     except Exception:
         pass
     if os.path.exists(LEGACY_DATA_FILE):
@@ -1052,10 +1127,22 @@ def _resolve_data_path():
 
 
 def get_data():
-    """Returns (df, is_real). is_real is True when a real data file was loaded."""
-    path = _resolve_data_path()
-    if path:
-        return load_real_data(path), True
+    """Returns (df, is_real). is_real is True when a real data file was loaded.
+    Falls back to demo data and surfaces a warning if the configured source
+    cannot be reached."""
+    target = _resolve_data_path()
+    if target:
+        try:
+            return load_real_data(target), True
+        except Exception as exc:
+            try:
+                import streamlit as st
+                st.warning(
+                    f"Could not load your data from `{target}`: {exc}. "
+                    "Showing demo data until this is fixed."
+                )
+            except Exception:
+                pass
     return generate_demo_data(), False
 
 
