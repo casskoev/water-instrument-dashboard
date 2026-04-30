@@ -54,6 +54,22 @@ with col1:
     st.markdown(
         f"""
         <div class="card">
+            <h4 style="margin-top:0;">Predicted vs. actual</h4>
+            <p style="color:{TEXT_MUTED}; font-size:0.85rem; line-height:1.5; margin-bottom:0.5rem;">
+                Start here. Predict your students' performance, then see where your
+                expectations matched or diverged from the data.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button("Open radar", key="go_radar", use_container_width=True):
+        st.switch_page("pages/1_Predicted_vs_Actual.py")
+
+with col2:
+    st.markdown(
+        f"""
+        <div class="card">
             <h4 style="margin-top:0;">Anchoring Concept trends</h4>
             <p style="color:{TEXT_MUTED}; font-size:0.85rem; line-height:1.5; margin-bottom:0.5rem;">
                 Per-question response distributions with expandable details and tailored
@@ -64,22 +80,7 @@ with col1:
         unsafe_allow_html=True,
     )
     if st.button("Open trends", key="go_trends", use_container_width=True):
-        st.switch_page("pages/1_Anchoring_Concepts_Trends.py")
-
-with col2:
-    st.markdown(
-        f"""
-        <div class="card">
-            <h4 style="margin-top:0;">Predicted vs. actual</h4>
-            <p style="color:{TEXT_MUTED}; font-size:0.85rem; line-height:1.5; margin-bottom:0.5rem;">
-                Compare what you expected your students to know to what the data revealed.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    if st.button("Open radar", key="go_radar", use_container_width=True):
-        st.switch_page("pages/2_Predicted_vs_Actual.py")
+        st.switch_page("pages/2_Anchoring_Concepts_Trends.py")
 
 with col3:
     st.markdown(

@@ -1,9 +1,12 @@
 """
-Page 2 — Predicted vs. Actual
+Page 1 — Predicted vs. Actual
 Instructor enters predictions before seeing results, then submits to reveal the comparison radar.
 
-Placed before Student Confidence in the navigation so the bare confidence/performance
-charts on the next page do not spoil the prediction exercise here.
+Placed first in the navigation so the bare confidence/performance charts on
+later pages do not spoil the prediction exercise here. After the radar, each
+Anchoring Concept's divergence card surfaces the count of flagged items and
+lets the instructor jump straight to those items on the Anchoring Concept
+Trends page.
 """
 
 import streamlit as st
@@ -72,7 +75,7 @@ st.markdown(
 
 page_header(
     "Predicted vs. actual",
-    "How does your expectation of student performance compare to what the data revealed?",
+    "Start here. Predict your students' performance before seeing the data, then explore the gaps.",
 )
 
 st.markdown(
@@ -99,13 +102,16 @@ ac_names = list(ANCHORING_CONCEPTS.keys())
 ac_short = [k.split(": ")[1] for k in ac_names]
 
 actual_scores = []
+flagged_counts = {}
 for ac_name, ac_info in ANCHORING_CONCEPTS.items():
     items_in_ac = [i for i in ac_info["items"] if i in df["item_id"].values]
     if items_in_ac:
-        avg = df[df["item_id"].isin(items_in_ac)]["cc_pct"].mean()
-        actual_scores.append(round(avg))
+        ac_df = df[df["item_id"].isin(items_in_ac)]
+        actual_scores.append(round(ac_df["cc_pct"].mean()))
+        flagged_counts[ac_name] = int(ac_df["prominent_ac"].sum())
     else:
         actual_scores.append(50)
+        flagged_counts[ac_name] = 0
 
 if "predictions_submitted" not in st.session_state:
     st.session_state.predictions_submitted = False
@@ -158,7 +164,9 @@ else:
             <h3 style="margin:0 0 0.4rem 0;">Predictions submitted</h3>
             <p style="color:{TEXT_MUTED}; font-size:0.88rem; line-height:1.6; margin:0;">
                 The radar below compares your predictions (blue dotted) against your students'
-                actual performance (green). Scroll for a per-AC breakdown.
+                actual performance (green). Scroll for a per-Anchoring-Concept breakdown,
+                with shortcuts into the alternate conceptions present in your students'
+                responses.
             </p>
         </div>
         """,
@@ -217,6 +225,16 @@ else:
     st.plotly_chart(fig_radar, use_container_width=True)
 
     st.markdown("### Where did expectations diverge?")
+    st.markdown(
+        f"<p style='color:{TEXT_MUTED}; font-size:0.88rem; line-height:1.6; margin:-0.25rem 0 1rem 0;'>"
+        "For each Anchoring Concept below, the count of flagged items shows how many "
+        "questions in that concept have prominent alternate conceptions. Click "
+        "<strong style='color:{TEXT};'>View in Anchoring Concept Trends</strong> on any "
+        "card to jump straight to the conceptions students chose and the tailored "
+        "instructional resources for them."
+        "</p>",
+        unsafe_allow_html=True,
+    )
 
     divergences = [
         (ac_names[i], actual_scores[i], predicted_scores[i],
@@ -229,22 +247,43 @@ else:
     for idx, (ac_name, actual, predicted, gap) in enumerate(divergences):
         col = [c1, c2, c3][idx % 3]
         short = ac_name.split(": ")[1]
+        n_flagged = flagged_counts.get(ac_name, 0)
+
         if abs(gap) >= 15:
             if gap > 0:
                 tag = '<span class="surprise-tag under">Students outperformed expectations</span>'
                 insight = (
                     f"Your students scored {abs(gap)}% higher than predicted. "
-                    "Consider what these data suggest about your instructional approach in this area."
+                    "Worth examining what's working in your approach to this concept."
                 )
             else:
                 tag = '<span class="surprise-tag over">Students underperformed expectations</span>'
                 insight = (
                     f"Your students scored {abs(gap)}% lower than predicted. "
-                    "This gap may indicate an area where instruction is not landing as intended."
+                    "Open the flagged items below to see which alternate conceptions "
+                    "they landed on instead, and what evidence-based moves might help."
                 )
         else:
             tag = '<span class="surprise-tag aligned">Aligned with prediction</span>'
-            insight = f"Actual performance ({actual}%) closely matched your prediction ({predicted}%)."
+            insight = (
+                f"Actual performance ({actual}%) closely matched your prediction "
+                f"({predicted}%)."
+            )
+
+        if n_flagged == 0:
+            flagged_line = (
+                "No alternate conceptions in this concept reached the prominence threshold."
+            )
+        elif n_flagged == 1:
+            flagged_line = (
+                "<strong>1 flagged item</strong> with a prominent alternate conception "
+                "in this concept."
+            )
+        else:
+            flagged_line = (
+                f"<strong>{n_flagged} flagged items</strong> with prominent alternate "
+                "conceptions in this concept."
+            )
 
         with col:
             st.markdown(
@@ -258,10 +297,30 @@ else:
                     <p style="margin-top:0.5rem; font-size:0.78rem; color:{TEXT_MUTED};">
                         Predicted: {predicted}% &nbsp;|&nbsp; Actual: {actual}%
                     </p>
+                    <p style="margin-top:0.6rem; font-size:0.82rem; color:{TEXT};">
+                        {flagged_line}
+                    </p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+            # Button placed outside the card markdown so Streamlit can wire its state.
+            if n_flagged > 0:
+                if st.button(
+                    f"View flagged items in {short}",
+                    key=f"goto_{ac_name}",
+                    use_container_width=True,
+                ):
+                    st.session_state["preselect_ac"] = ac_name
+                    st.switch_page("pages/2_Anchoring_Concepts_Trends.py")
+            else:
+                if st.button(
+                    f"Browse {short}",
+                    key=f"goto_{ac_name}",
+                    use_container_width=True,
+                ):
+                    st.session_state["preselect_ac"] = ac_name
+                    st.switch_page("pages/2_Anchoring_Concepts_Trends.py")
 
     st.markdown(
         f"""
@@ -270,7 +329,9 @@ else:
                 <strong>Where to focus:</strong> Areas where you overestimated performance
                 (students underperformed) are high-priority targets. Areas where students
                 outperformed your expectations can help recalibrate your instructional
-                assumptions and reveal productive strengths to build on.
+                assumptions and reveal productive strengths to build on. Either way,
+                the next move is to look at the specific alternate conceptions students
+                chose, on the Anchoring Concept Trends page.
             </p>
         </div>
         """,

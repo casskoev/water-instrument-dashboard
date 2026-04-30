@@ -26,20 +26,46 @@ auth.require_login()
 inject_css()
 
 page_header(
-    "Demographic trends",
-    "Performance patterns across student demographic groups, where data is available.",
+    "Demographic trends (illustrative demo only)",
+    "Placeholder for future functionality. The numbers below are simulated.",
 )
 
-# A care-and-context note replaces the warning emoji and color.
+# Prominent demo-data banner. This page is currently a wireframe: every chart
+# is filled with randomly generated values. Make that unmistakable so an
+# instructor never confuses these bars for their actual cohort.
+st.markdown(
+    f"""
+    <div style="background: rgba(255, 191, 71, 0.12);
+                border: 1px solid rgba(255, 191, 71, 0.55);
+                border-left: 4px solid #FFBF47;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                margin-bottom: 1.5rem;">
+        <p style="color: #FFBF47; font-weight: 700; font-size: 0.95rem;
+                  text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.5rem 0;">
+            Illustrative demo only
+        </p>
+        <p style="color: {TEXT}; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+            The numbers and groupings on this page are <strong>randomly generated</strong>,
+            not your students' actual demographic data. This page is a placeholder for
+            future functionality and will activate only when demographic variables are
+            collected as part of your course administration and added to your dataset.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Standing equity-and-care note about how demographic data should be interpreted
+# even when real. Kept here so the framing is in place when the page goes live.
 st.markdown(
     f"""
     <div class="note warn">
-        <span class="label">Important context</span>
-        Demographic information is displayed only when collected as part of your course
-        administration. Differences in group-level performance reflect structural and
-        instructional factors, not inherent differences in student ability. The goal is
-        to identify where instruction may be serving some students less effectively than
-        others, not to characterize groups.
+        <span class="label">When real data is added</span>
+        Differences in group-level performance reflect structural and instructional
+        factors, not inherent differences in student ability. The goal of this analysis
+        is to identify where instruction may be serving some students less effectively
+        than others, not to characterize groups.
     </div>
     """,
     unsafe_allow_html=True,

@@ -53,7 +53,10 @@ data_banner(df, is_real)
 
 rng = np.random.default_rng(99)
 ac_names = list(ANCHORING_CONCEPTS.keys())
-ac_short = [k.split(":")[0] for k in ac_names]
+# Use the descriptive title (e.g. "Atoms", "Bonding", "Intermolecular Forces")
+# instead of the AC number, so instructors can read the charts without having
+# to memorize which number maps to which concept.
+ac_short = [k.split(": ")[1] for k in ac_names]
 
 actual_pct_correct = []
 avg_confidence = []

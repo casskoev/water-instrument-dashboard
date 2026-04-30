@@ -1,8 +1,11 @@
 """
-Page 1 — Anchoring Concept Trends
+Page 2 — Anchoring Concept Trends
 Per-item response distributions organized by ACS Anchoring Concept, with click-to-expand
 item detail (question text, alternate conceptions, vocabulary notes, tailored resources).
 
+When the user arrives via a "View flagged items in {AC}" button on the
+Predicted vs. Actual page, st.session_state["preselect_ac"] is set; this page
+consumes it once to filter the AC multiselect down to that concept.
 """
 
 import streamlit as st
@@ -66,6 +69,16 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# ── Cross-page preselect ─────────────────────────────────────────────────────
+# When the user clicked "View flagged items in {AC}" on Predicted vs. Actual,
+# session_state["preselect_ac"] is the AC name. We pop it (one-shot), then
+# overwrite the multiselect's persisted state so the next render shows that
+# AC alone. After the user changes the multiselect, their choice persists
+# normally (Streamlit keeps widget state by key).
+_preselect_ac = st.session_state.pop("preselect_ac", None)
+if _preselect_ac and _preselect_ac in ANCHORING_CONCEPTS:
+    st.session_state["ac_filter_widget"] = [_preselect_ac]
+
 # ── Controls ──────────────────────────────────────────────────────────────────
 # Sort options use a (label, key) structure so the visible label can be changed
 # freely without breaking the sort logic below. Edit the strings; the keys
@@ -92,6 +105,7 @@ with col_ctrl3:
         "Filter by Anchoring Concept",
         list(ANCHORING_CONCEPTS.keys()),
         default=list(ANCHORING_CONCEPTS.keys()),
+        key="ac_filter_widget",
     )
 
 # ── Legend ────────────────────────────────────────────────────────────────────
