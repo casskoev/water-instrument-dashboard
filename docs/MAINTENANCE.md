@@ -4,8 +4,8 @@ This document covers the day-to-day workflows for keeping the Water
 Instrument Dashboard up to date: editing items, adding tailored resources,
 adjusting vocabulary notes, and getting changes deployed.
 
-The audience is the project maintainer (currently Cas) or anyone they hand
-the keys to. Following this SOP keeps the local repo, the deployed app, and
+The audience is the project maintainer or anyone they hand the keys to. 
+Following this SOP keeps the local repository, the deployed app, and
 the item bank in sync.
 
 ## Where things live
