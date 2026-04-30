@@ -8,6 +8,13 @@ The audience is the project maintainer or anyone they hand the keys to.
 Following this SOP keeps the local repository, the deployed app, and
 the item bank in sync.
 
+## Other documentation
+
+If you are an instructor using the dashboard rather than maintaining it,
+[COLLABORATORS.md](COLLABORATORS.md) is the right doc. If you are completely
+new to code and deployed apps and want a gentler tour before diving into
+SOPs, start with [ONBOARDING.md](ONBOARDING.md).
+
 ## Where things live
 
 - `data.py` is the single source of truth for the item bank, the tailored

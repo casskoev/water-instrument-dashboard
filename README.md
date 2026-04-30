@@ -1,7 +1,7 @@
 # Water Instrument Dashboard
 
 Instructor-facing interpretation tool for the Water Instrument, a research-based
-General Chemistry assessment covering the eight ACS Anchoring Concepts. Each
+General Chemistry assessment covering eight of the ACS Anchoring Concepts. Each
 instructor signs in and sees only their own students' data alongside tailored
 pedagogical resources.
 
@@ -9,6 +9,10 @@ Built by the Balabanoff Research Group at the University of Louisville.
 
 ## Documentation
 
+- [docs/ONBOARDING.md](docs/ONBOARDING.md) — start here if you are a new
+  graduate student joining the research group with no background in code,
+  GitHub, or deployed apps. A gentle, hands-on tour of where everything
+  lives and what the back end actually is.
 - [docs/COLLABORATORS.md](docs/COLLABORATORS.md) — start here if you are a new
   instructor being onboarded onto the dashboard. Covers what the tool does,
   how to log in, a tour of each page, and how to read the charts.

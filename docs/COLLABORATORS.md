@@ -4,6 +4,13 @@ This is a short orientation for instructors and collaborators who are new to
 the dashboard. If you have questions that are not answered here, contact
 Morgan Balabanoff (morgan.balabanoff@louisville.edu).
 
+## Other documentation
+
+If you joined the research group as a graduate student and are new to code,
+GitHub, and deployed apps, [ONBOARDING.md](ONBOARDING.md) is a gentler
+starting point. If you are maintaining the dashboard, see
+[MAINTENANCE.md](MAINTENANCE.md) for SOPs.
+
 ## What this tool does
 
 The Water Instrument Dashboard helps general chemistry instructors make sense
