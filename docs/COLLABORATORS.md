@@ -2,23 +2,22 @@
 
 This is a short orientation for instructors and collaborators who are new to
 the dashboard. If you have questions that are not answered here, contact
-Cas Koevoets-Beach.
+Morgan Balabanoff (morgan.balabanoff@louisville.edu).
 
 ## What this tool does
 
 The Water Instrument Dashboard helps general chemistry instructors make sense
 of their students' responses to the Water Instrument, a research-based
-assessment covering the eight ACS Anchoring Concepts. Rather than handing you
-raw frequencies and asking you to interpret them, the dashboard surfaces:
+assessment aligned with the ACS Anchoring Concepts. Rather than handing you
+raw frequencies and asking you to interpret them, the dashboard shows you:
 
-- Where students landed on a different conception than the correct one,
+- Where students landed on a different conception than the most correct one,
   question by question.
 - Which of those alternate conceptions were prominent (close to or exceeding
   the rate of the correct conception), so you can prioritize.
-- Tailored, evidence-based instructional resources for the prominent patterns
-  in your specific cohort.
+- Tailored, evidence-based instructional resources and literature for the prominent patterns in your specific student population ("cohort").
 - A side-by-side comparison of your predictions for student performance and
-  what your students actually did.
+  how your students actually did.
 
 The point is to bridge the gap between data interpretation and instructional
 action: the tool is designed to make the move from "I see a pattern" to
@@ -26,32 +25,43 @@ action: the tool is designed to make the move from "I see a pattern" to
 
 ## How to log in
 
-You will receive an account from Cas. Each instructor has their own
+You will receive an account from the research team. Each instructor has their own
 username, password, and data file. You only ever see your own cohort's data.
 
-1. Open the dashboard URL Cas sent you. It looks like
-   `https://your-app-name.streamlit.app`.
+1. Open the dashboard URL sent to you. It looks like
+   `https://waterinstrumentdashboard.streamlit.app`.
 2. Enter your username and password on the sign-in screen.
 3. The page header will greet you by name and show the cohort label and
-   institution Cas configured for you, so you can confirm you are looking at
+   institution configured for you, so you can confirm you are looking at
    the right dataset.
 
-If you forget your password, contact Cas. Passwords are stored as one-way
-hashes; they cannot be recovered, only reset.
+If you forget your password, contact the research teams. Passwords are stored as 
+one-way hashes; they cannot be recovered, only reset.
 
 ## A tour of the pages
 
 The sidebar lists four pages. Use them roughly in this order the first time:
 
-### 1. Anchoring Concept Trends
+### 1. Predicted vs. Actual
+
+Open this **before** you spend much time on the other pages. The page asks
+you to predict your students' performance on each Anchoring Concept before
+revealing actual results, and then visualizes the gap. Moments where your
+prediction was off, in either direction, tend to be the most productive
+starting points for new instructional ideas.
+
+The page is sequenced first in the navigation specifically so other pages do
+not spoil the prediction exercise.
+
+### 2. Anchoring Concept Trends
 
 This is the main page. For each of the eight ACS Anchoring Concepts, you see
 your students' response distribution on every item in that concept. Each item
 gets a small horizontal bar chart with one bar per answer choice (A through D).
 
-- A green bar is the **correct** answer.
+- A green bar is the **most correct** answer.
 - A blue bar is a **prominent alternate conception**, meaning students chose it
-  at a rate within 15 percentage points of the correct answer.
+  at a rate within 15 percentage points of or exceeding the most correct answer.
 - A gray bar is an alternate conception students chose less often.
 - A red triangle (▲) above an item title flags items where at least one
   alternate conception is prominent.
@@ -66,17 +76,6 @@ to the prominent alternate conception.
 The filters at the top let you sort items within each concept (by number, by
 flagged-first, or by lowest correct conception percentage), restrict to
 flagged items only, or hide concepts you do not want to look at right now.
-
-### 2. Predicted vs. Actual
-
-Open this **before** you spend much time on the other pages. The page asks
-you to predict your students' performance on each Anchoring Concept before
-revealing actual results, and then visualizes the gap. Moments where your
-prediction was off, in either direction, tend to be the most productive
-starting points for new instructional ideas.
-
-The page is sequenced first in the navigation specifically so other pages do
-not spoil the prediction exercise.
 
 ### 3. Student Confidence
 
@@ -99,17 +98,17 @@ structures, or instruction is producing the patterns you see.
 
 ## Reading the colors and flags
 
-Three colors carry the data semantics across every chart and pill:
+Three colors carry the data semantics across every chart and page:
 
 - **Green** is the correct conception (the "Most Correct Conception").
 - **Blue** is a prominent alternate conception.
 - **Gray** is an alternate conception that students chose, but not at a rate
   that crosses the prominence threshold.
 
-The red triangle (▲) and the red "Items with prominent ACs" stat at the top
-of each page are a separate dimension: they flag items where at least one
-alternate conception is prominent. A flagged item has at least one blue bar
-in its chart.
+The red triangle (▲) and the red "Questions with prominent alternate conceptions" 
+stat at the topof each page are a separate dimension: they flag items where at 
+least one alternate conception is prominent. A flagged item has at least one blue 
+bar in its chart.
 
 In the expander, each conception is labeled with its role:
 
@@ -132,8 +131,8 @@ plus the item bank (questions, alternate conceptions, vocabulary notes,
 research resources), which is the same content for everyone.
 
 Your password is stored as a one-way bcrypt hash, not as plaintext, in the
-deployed application's secrets manager. Cas can rotate it but cannot recover
-the original.
+deployed application's secrets manager. The research teams can rotate it but 
+cannot recover the original.
 
 The data files contain anonymous response data only (answer choices and
 confidence ratings per question). They do not contain student names, student
@@ -141,8 +140,9 @@ IDs, or any other identifying information.
 
 ## How to give feedback or ask for help
 
-Issues, feature requests, or "this number looks wrong" reports go to Cas at
-cassiekoevoets@gmail.com. Especially welcome:
+Issues, feature requests, or "this number looks wrong" reports go to the project 
+lead, Morgan Balabanoff (morgan.balabanoff@louisville.edu) who will make sure a 
+team member gets back with you promptly. Especially welcome:
 
 - Things that are confusing about how a chart is presented.
 - Cases where the prominent-AC threshold flagged something you would not
@@ -154,3 +154,4 @@ Honest feedback about what does and does not help your interpretation is
 the single most useful thing you can do for the project, because the whole
 point of the tool is to support instructional action, and we can only know
 whether it does that by asking the people using it.
+
