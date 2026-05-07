@@ -85,10 +85,7 @@ st.markdown(
             Predict your students' performance <strong>before</strong> seeing the data,
             then reveal how your expectations compare to actual results. Moments of
             surprise, where actual performance diverges from your prediction, are often
-            the most productive for generating new instructional conclusions. As one
-            instructor put it:
-            <em>"I tend to fixate on the things that I know are problems and not necessarily
-            recognize the things that they are good at."</em>
+            the most productive for generating new instructional conclusions. 
         </p>
     </div>
     """,
@@ -163,8 +160,8 @@ else:
             <span class="step-badge">Step 2 of 2</span>
             <h3 style="margin:0 0 0.4rem 0;">Predictions submitted</h3>
             <p style="color:{TEXT_MUTED}; font-size:0.88rem; line-height:1.6; margin:0;">
-                The radar below compares your predictions (blue dotted) against your students'
-                actual performance (green). Scroll for a per-Anchoring-Concept breakdown,
+                The radar below compares your predictions (orange dotted) against your students'
+                actual performance (purple). Scroll for a per-Anchoring-Concept breakdown,
                 with shortcuts into the alternate conceptions present in your students'
                 responses.
             </p>
@@ -190,8 +187,8 @@ else:
         r=actual_closed,
         theta=categories,
         fill="toself",
-        fillcolor="rgba(61,220,151,0.18)",
-        line=dict(color=CC_COLOR, width=2.5),
+        fillcolor="rgba(123,79,166,0.18)",
+        line=dict(color="#7B4FA6", width=2.5),
         name="Actual performance",
         hovertemplate="<b>%{theta}</b><br>Actual: %{r}%<extra></extra>",
     ))
@@ -200,8 +197,8 @@ else:
         r=predicted_closed,
         theta=categories,
         fill="toself",
-        fillcolor="rgba(77,168,255,0.10)",
-        line=dict(color=AC_COLOR, width=2.5, dash="dot"),
+        fillcolor="rgba(224,123,57,0.10)",
+        line=dict(color="#E07B39", width=2.5, dash="dot"),
         name="Your prediction",
         hovertemplate="<b>%{theta}</b><br>Predicted: %{r}%<extra></extra>",
     ))
@@ -327,7 +324,7 @@ else:
         <div class="card" style="margin-top:1rem;">
             <p style="color:{TEXT}; font-size:0.85rem; line-height:1.6; margin:0;">
                 <strong>Where to focus:</strong> Areas where you overestimated performance
-                (students underperformed) are high-priority targets. Areas where students
+                are high-priority targets. Areas where students
                 outperformed your expectations can help recalibrate your instructional
                 assumptions and reveal productive strengths to build on. Either way,
                 the next move is to look at the specific alternate conceptions students

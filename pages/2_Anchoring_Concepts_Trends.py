@@ -284,8 +284,8 @@ def render_full_detail(iid: int, row, item: dict, is_flagged: bool) -> None:
             f'<p style="color:{TEXT_MUTED}; font-size:0.82rem; line-height:1.5; '
             f'margin:0.9rem 0 0.4rem 0;">'
             "Tailored pedagogical resources for this prominent alternate conception. "
-            "These are framed in alignment with responsive teaching principles, positioning "
-            "alternate conceptions as productive starting points rather than errors to correct."
+            "These are framed positioning alternate conceptions as "
+            "productive starting points rather than errors to correct."
             "</p>",
             unsafe_allow_html=True,
         )
@@ -295,7 +295,7 @@ def render_full_detail(iid: int, row, item: dict, is_flagged: bool) -> None:
         st.markdown(
             f'<p style="color:{TEXT_MUTED}; font-size:0.82rem; margin-top:0.9rem;">'
             "Resources for this alternate conception are being developed. "
-            "The resource library grows as the CER literature expands.</p>",
+            "The resource library grows as CER literature and tools expand.</p>",
             unsafe_allow_html=True,
         )
 
@@ -385,7 +385,7 @@ for ac_name, ac_info in ANCHORING_CONCEPTS.items():
         # Chart on the left, brief correct/prominent summary on the right
         col_chart, col_summary = st.columns([3, 2])
         with col_chart:
-            st.plotly_chart(fig, use_container_width=True, key=f"ac_chart_{iid}")
+            st.plotly_chart(fig, width='stretch', key=f"ac_chart_{iid}")
         with col_summary:
             render_inline_summary(iid, row, item, is_flagged)
 

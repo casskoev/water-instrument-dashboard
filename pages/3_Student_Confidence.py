@@ -38,10 +38,10 @@ st.markdown(
             Confidence ratings collected alongside the Water Instrument let you examine
             students' metacognitive calibration. Students who are
             <strong style="color:{FLAG_COLOR};">overconfident</strong> in alternate conceptions
-            (high confidence and a wrong answer) are a particular instructional challenge.
+            (high confidence and a wrong answer) may be a particular instructional challenge.
             Students who are
             <strong style="color:{AC_COLOR};">underconfident</strong> in correct answers
-            may benefit from explicit reinforcement of what they already know.
+            may benefit from encouragement and/or explicit reinforcement of what they already know.
         </p>
     </div>
     """,
@@ -168,10 +168,10 @@ st.markdown("### Calibration map: confidence vs. performance")
 st.markdown(
     f"""
     <div class="legend-row">
-        <span><span class="legend-dot" style="background:{CC_COLOR};"></span> Well calibrated</span>
+        <span><span class="legend-dot" style="background:{CC_COLOR};"></span> Calibrated high </span>
         <span><span class="legend-dot" style="background:{FLAG_COLOR};"></span> Overconfident</span>
         <span><span class="legend-dot" style="background:{AC_COLOR};"></span> Underconfident</span>
-        <span><span class="legend-dot" style="background:{AC_FADED_COLOR};"></span> Low engagement</span>
+        <span><span class="legend-dot" style="background:{AC_FADED_COLOR};"></span> Calibrated low </span>
     </div>
     """,
     unsafe_allow_html=True,
@@ -226,7 +226,7 @@ fig_scatter.add_trace(go.Scatter(
 # Quadrant labels positioned at each quadrant's center.
 fig_scatter.add_annotation(x=2.0, y=75, text="Underconfident", showarrow=False,
                            font=dict(size=11, color=AC_COLOR), opacity=0.8)
-fig_scatter.add_annotation(x=4.0, y=75, text="Well calibrated", showarrow=False,
+fig_scatter.add_annotation(x=4.0, y=75, text="Calibrated High", showarrow=False,
                            font=dict(size=11, color=CC_COLOR), opacity=0.8)
 fig_scatter.add_annotation(x=4.0, y=25, text="Overconfident", showarrow=False,
                            font=dict(size=11, color=FLAG_COLOR), opacity=0.8)
@@ -263,7 +263,7 @@ if overconfident:
         f"{'falls' if len(overconfident) == 1 else 'fall'} in the overconfident "
         f"quadrant. Students believe they understand more than the data suggests; "
         f"addressing alternate conceptions in {'this area' if len(overconfident) == 1 else 'these areas'} "
-        f"may have outsized impact since students are less likely to seek out corrections."
+        f"may have outsized impact since students could be less likely to seek out corrections."
     )
 else:
     overconf_phrase = (
@@ -274,7 +274,7 @@ else:
 if underconfident:
     underconf_phrase = (
         f" Students are <strong style='color:{AC_COLOR};'>underconfident</strong> in "
-        f"{', '.join(underconfident)}, where reinforcing what they already know may pay off."
+        f"{', '.join(underconfident)}, where encouraging them or reinforcing what they already know may pay off."
     )
 else:
     underconf_phrase = ""
@@ -288,7 +288,7 @@ st.markdown(
 # ── Calibration gap bar ───────────────────────────────────────────────────────
 st.markdown("### Calibration gap by AC")
 st.caption(
-    "Positive bars mean students are more confident than their performance warrants. "
+    "Positive bars mean students are more confident than accurate. "
     "Negative bars mean they are underconfident."
 )
 
@@ -344,7 +344,7 @@ st.markdown(
     f"margin:-0.25rem 0 0 0;'>"
     f"{over_phrase}{under_phrase}"
     f"Positive gaps deserve more instructional attention than negative ones, since "
-    f"students who are wrong-but-confident are less likely to update their thinking."
+    f"students who are wrong-but-confident may struggle to identify study targets or seek assistance."
     f"</p>",
     unsafe_allow_html=True,
 )
@@ -355,8 +355,8 @@ st.markdown(
         <p style="color:{TEXT}; font-size:0.85rem; line-height:1.6; margin:0;">
             <strong>Where to focus:</strong> Anchoring Concepts where students are
             simultaneously overconfident and hold prominent alternate conceptions are
-            the highest-priority targets. Students who are wrong but confident are less
-            likely to seek out or accept corrective information.
+            the highest-priority targets. Students who confident in alternate conceptions are less
+            likely to seek out help from you or spend more time building correct ideas.
         </p>
     </div>
     """,

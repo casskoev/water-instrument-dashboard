@@ -31,35 +31,35 @@ from theme import CC_COLOR, AC_COLOR, AC_FADED_COLOR, FLAG_COLOR  # noqa: F401
 ANCHORING_CONCEPTS = {
     "AC1: Atoms": {
         "items": [1],
-        "description": "Atomic structure, isotopes, and subatomic particles",
+        "description": "Matter consists of atoms that have internal structures that dictate their chemical and physical behavior",
     },
     "AC2: Bonding": {
         "items": [2, 3, 4, 5, 6],
-        "description": "Covalent and ionic bonding, potential energy diagrams",
+        "description": "Atoms interact via electrostatic forces to form chemical bonds",
     },
     "AC3: Structure & Function": {
         "items": [7, 8, 9, 10, 11],
-        "description": "Molecular geometry, hybridization, polarity, electron density",
+        "description": "Chemical compounds have geometric structures that influence their chemical and physical behaviors",
     },
     "AC4: Intermolecular Forces": {
         "items": [12, 13, 14, 15, 16, 17, 18, 19, 21],
-        "description": "Hydrogen bonding, London dispersion forces, phase changes",
+        "description": " Intermolecular forces (electrostatic forces between molecules) dictate the physical behavior of matter",
     },
     "AC5: Reactions": {
         "items": [22, 23],
-        "description": "Formation of water, bond energy and reaction energetics",
+        "description": "Matter changes, forming products that have new chemical and physical properties",
     },
     "AC6: Energy & Thermodynamics": {
         "items": [20, 24, 25, 26, 31, 32],
-        "description": "Kinetic energy distributions, entropy, spontaneity, free energy",
+        "description": "Energy is the key currency of chemical reactions in molecular-scale systems as well as macroscopic systems",
     },
     "AC7: Kinetics": {
         "items": [28, 29, 30],
-        "description": "Reaction rate, order, and thermodynamic independence",
+        "description": "Chemical changes have a time scale over which they occur",
     },
     "AC8: Equilibrium": {
         "items": [27, 33, 34, 35, 36, 37, 38],
-        "description": "Equilibrium constants, Le Chatelier's principle, acid-base",
+        "description": "All physical and chemical changes are, in principle, reversible and often reach a state of dynamic equilibrium",
     },
 }
 
