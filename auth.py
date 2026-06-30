@@ -105,7 +105,7 @@ def require_login() -> dict:
     config = _load_config()
 
     # streamlit-authenticator 0.4.x: login() takes a form name and location.
-    authenticator.login("Login", "main")
+    authenticator.login(location="main")
 
     status = st.session_state.get("authentication_status")
 
