@@ -301,6 +301,26 @@ If you want to be extra careful, also rotate the cookie key
 user is also invalidated. Note that rotating the cookie key signs everyone
 out, not just the removed user.
 
+## streamlit-authenticator version note
+
+The app uses `streamlit-authenticator>=0.4,<0.5`. Version 0.4.x dropped the
+`extra-streamlit-components` dependency, which was incompatible with Streamlit
+versions above ~1.34. If you ever see a "Signature verification failed" error
+on the login screen, the most likely cause is a version mismatch — check that
+`pip show streamlit-authenticator` shows a 0.4.x version, and reinstall from
+`requirements.txt` if not:
+
+```bash
+pip install -r requirements.txt
+```
+
+When generating password hashes for new users, use bcrypt directly (the
+`scripts/hash_password.py` script still works) or the library's own hasher:
+
+```bash
+python3 -c "import streamlit_authenticator as stauth; print(stauth.Hasher(['password']).generate()[0])"
+```
+
 ## Common pitfalls
 
 - **Updating local but forgetting to push.** Local changes do not propagate

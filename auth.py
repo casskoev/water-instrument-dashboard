@@ -12,6 +12,11 @@ Behavior:
     3. On successful login, stores the user's data_path, institution, and cohort_label
        in st.session_state so data.py and the page headers can pick them up.
     4. Adds a "Sign out" button to the sidebar.
+
+Compatibility: streamlit-authenticator >= 0.4, < 0.5
+    Version 0.4.x dropped the extra-streamlit-components dependency, which was
+    incompatible with Streamlit >= 1.34. The login() and logout() call signatures
+    changed; this file reflects the 0.4.x API.
 """
 
 from __future__ import annotations
@@ -99,8 +104,8 @@ def require_login() -> dict:
     authenticator = _build_authenticator()
     config = _load_config()
 
-    # streamlit-authenticator 0.3.x writes auth status into session_state directly.
-    authenticator.login(location="main", key="login")
+    # streamlit-authenticator 0.4.x: login() takes a form name and location.
+    authenticator.login("Login", "main")
 
     status = st.session_state.get("authentication_status")
 
@@ -177,8 +182,10 @@ def _render_sidebar_account(authenticator: stauth.Authenticate, user: dict) -> N
             """,
             unsafe_allow_html=True,
         )
+        # streamlit-authenticator 0.4.x: logout() takes button name and location
+        # as positional arguments.
         try:
-            authenticator.logout(button_name="Sign out", location="sidebar", key="logout")
-        except TypeError:
-            # older streamlit-authenticator API
             authenticator.logout("Sign out", "sidebar")
+        except TypeError:
+            # Fallback for any minor API variation across 0.4.x patch releases.
+            authenticator.logout(button_name="Sign out", location="sidebar")
