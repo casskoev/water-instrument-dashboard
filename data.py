@@ -1240,3 +1240,5 @@ def get_data():
 def get_ac_color(is_prominent):
     """Backwards-compatible helper. Prefer importing AC_COLOR / AC_FADED_COLOR directly."""
     return AC_COLOR if is_prominent else AC_FADED_COLOR
+
+    #test edit
