@@ -57,6 +57,18 @@ ac_names = list(ANCHORING_CONCEPTS.keys())
 # instead of the AC number, so instructors can read the charts without having
 # to memorize which number maps to which concept.
 ac_short = [k.split(": ")[1] for k in ac_names]
+# Shorter labels for the scatter plot so they don't overlap
+SCATTER_LABELS = {
+    "Atoms": "AC1",
+    "Bonding": "AC2",
+    "Structure & Function": "AC3",
+    "Intermolecular Forces": "AC4",
+    "Reactions": "AC5",
+    "Energy & Thermodynamics": "AC6",
+    "Kinetics": "AC7",
+    "Equilibrium": "AC8",
+}
+ac_scatter = [SCATTER_LABELS.get(name, name) for name in ac_short]
 
 actual_pct_correct = []
 avg_confidence = []
@@ -216,7 +228,8 @@ fig_scatter.add_trace(go.Scatter(
     x=avg_confidence,
     y=pct_correct,
     mode="markers+text",
-    text=ac_short,
+    text=ac_scatter,                 # short labels on the chart
+    customdata=ac_short,             # full names for the hover
     textposition="top center",
     textfont=dict(color=TEXT),
     marker=dict(color=colors, size=16, line=dict(width=1.5, color=SURFACE)),
