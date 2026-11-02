@@ -243,6 +243,8 @@ fig_scatter.add_annotation(x=4.0, y=75, text="Calibrated High", showarrow=False,
                            font=dict(size=11, color=CC_COLOR), opacity=0.8)
 fig_scatter.add_annotation(x=4.0, y=25, text="Overconfident", showarrow=False,
                            font=dict(size=11, color=FLAG_COLOR), opacity=0.8)
+fig_scatter.add_annotation(x=2.0, y=25, text="Calibrated Low", showarrow=False,
+                           font=dict(size=11, color=AC_FADED_COLOR), opacity=0.8)
 
 apply_plotly_theme(fig_scatter)
 fig_scatter.update_layout(
